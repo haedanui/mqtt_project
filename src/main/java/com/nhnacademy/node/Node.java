@@ -16,5 +16,9 @@ public abstract class Node implements Runnable {
         this.createdTime = System.currentTimeMillis();
     }
 
+    public void start(){
+        thread.start();
+    }
+
     public abstract void process();
 }
