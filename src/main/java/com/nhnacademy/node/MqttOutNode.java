@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
@@ -15,7 +14,6 @@ import com.nhnacademy.Wire;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import netscape.javascript.JSObject;
 
 @Slf4j
 @Getter
@@ -34,10 +32,14 @@ public class MqttOutNode extends Node implements Input {
         try (IMqttClient client = new MqttClient("tcp://localhost:1883", id)) {
             client.connect();
             for (Wire wire : inWires) {
-                JSONObject object = wire.getBq().poll();
-                
-                String payload = object.getString("payload");
-                client.publish(object.getString("topic"), new MqttMessage(payload.getBytes()));
+                while(!wire.getBq().isEmpty()){
+                    JSONObject object = wire.getBq().poll();
+                    
+                    String payload = object.getString("payload");
+    
+                    client.publish(object.getString("topic"), new MqttMessage(payload.getBytes()));
+                    log.info("{}", object);
+                }
             }
             
             while(!Thread.currentThread().isInterrupted()) {
@@ -54,6 +56,29 @@ public class MqttOutNode extends Node implements Input {
     public void run() {
         process();
 
+    }
+
+    public static void main(String[] args) {
+        MqttOutNode outNode = new MqttOutNode();
+        Wire wire = new Wire();
+        outNode.wireIn(wire);
+
+        JSONObject object = new JSONObject();
+        object.put("topic", "dfkjk");
+        object.put("payload", "dkfjkjkkkkkkkkkkk");
+
+        JSONObject object2 = new JSONObject();
+        object2.put("topic", "dkdkdkdk");
+        object2.put("payload", "ssssssssssssssssssss");
+        try {
+            wire.getBq().put(object);
+            wire.getBq().put(object2);
+
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        outNode.run();
     }
 }
 

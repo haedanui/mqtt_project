@@ -31,10 +31,6 @@ public class MqttInNode extends Node implements Output {
         String id = UUID.randomUUID().toString();
 
         try (IMqttClient client = new MqttClient("tcp://ems.nhnacademy.com:1883", id)) {
-            MqttConnectOptions options = new MqttConnectOptions();
-
-            // options.setAutomaticReconnect(true);
-
             client.connect();
             for (Wire wire : outWires) {
                 client.subscribe("#", (topic, msg) -> {
