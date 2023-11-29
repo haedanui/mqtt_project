@@ -7,8 +7,10 @@ import com.nhnacademy.Input;
 import com.nhnacademy.Output;
 import com.nhnacademy.Wire;
 
+import lombok.Getter;
 
-public class FunctionNode extends Node implements Input, Output {
+@Getter
+public abstract class FunctionNode extends Node implements Input, Output {
     private Set<Wire> outWires = new HashSet<>();
     private Set<Wire> inWires = new HashSet<>();
 
@@ -23,13 +25,5 @@ public class FunctionNode extends Node implements Input, Output {
     }
 
     @Override
-    public void process() {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void run() {
-        // TODO Auto-generated method stub
-        
-    }
+    public abstract void process();
 }
