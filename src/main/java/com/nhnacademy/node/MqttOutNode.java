@@ -58,7 +58,7 @@ public class MqttOutNode extends Node implements Input {
 
     }
 
-    public static void main(String[] args) {
+    /* public static void main(String[] args) {
         MqttOutNode outNode = new MqttOutNode();
         Wire wire = new Wire();
         outNode.wireIn(wire);
@@ -79,6 +79,6 @@ public class MqttOutNode extends Node implements Input {
             e.printStackTrace();
         }
         outNode.run();
-    }
+    } */
 }
 
