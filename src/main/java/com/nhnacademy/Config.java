@@ -17,4 +17,7 @@ public final class Config extends JSONObject {
         put("an", topic);
         put("s", allowedSensor);
     }
+    public static Config getCurrentConfig() {
+        return currentConfig;
+    }
 }

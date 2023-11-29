@@ -69,9 +69,9 @@ public class PreprocessNode extends FunctionNode {
             if (!inWires.isEmpty()) {
                 for (Wire inWire : inWires) {
                     JSONObject beforeTest = inWire.getBq().poll();
-                    if(beforeTest != null){
-                        if(checkSensor(beforeTest)&&checkTopic(beforeTest)){
-                            for (Wire outWire : outWires){
+                    if (beforeTest != null) {
+                        if (checkSensor(beforeTest) && checkTopic(beforeTest)) {
+                            for (Wire outWire : outWires) {
                                 outWire.getBq().add(beforeTest);
                             }
                         }
@@ -81,6 +81,7 @@ public class PreprocessNode extends FunctionNode {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 e.printStackTrace();
             }
         }
