@@ -33,6 +33,9 @@ public class MqttOutNode extends Node implements Input {
             client.connect();
             for (Wire wire : inWires) {
                 while(!wire.getBq().isEmpty()){
+                    if(wire.getBq().peek() == null)    {
+                        continue;
+                    }
                     JSONObject object = wire.getBq().poll();
                     
                     String payload = object.getString("payload");
