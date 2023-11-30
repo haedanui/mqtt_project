@@ -1,8 +1,9 @@
 package com.nhnacademy;
 
-import org.json.JSONObject;
+import java.util.Set;
+
 
 @FunctionalInterface
 public interface Executable {
-    JSONObject execute();
+    void execute(Set<Wire> inWires, Set<Wire> outWires);
 }
