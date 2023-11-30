@@ -30,7 +30,7 @@ public class PreprocessNode extends FunctionNode {
             if ((!sortTopic[i].equals(targetTopic[i])) || (!sortTopic[i].equals("+"))) {
                 return false;
             }
-            if (sortTopic[i].equals("#")) {//--an app/# app/ppap/abc
+            if (sortTopic[i].equals("#")) {
                 return true;
             }
         }
