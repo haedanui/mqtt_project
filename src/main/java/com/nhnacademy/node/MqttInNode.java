@@ -1,13 +1,11 @@
 package com.nhnacademy.node;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.json.JSONObject;
 
 import com.nhnacademy.Output;
@@ -20,17 +18,39 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class MqttInNode extends Node implements Output {
     private final Set<Wire> outWires = new HashSet<>();
+    private final String URI;
+    
+    /*
+     * 기본 URI = tcp://ems.nhnacademy.com:1883
+     */
+    public MqttInNode() {
+        URI = "tcp://ems.nhnacademy.com:1883";
+    }
 
+    /*
+     * 사용자 지정 uri
+     */
+    public MqttInNode(String uri) {
+        URI = uri;
+    }
+
+    /*
+     * wire 연결
+     */
     @Override
     public void wireOut(Wire wire) {
         outWires.add(wire);
     }
 
+    /*
+     * 들어오는 모든 data를 연결된 wire에 넣어준다
+     */
     @Override
     public void process() {
+        
         String id = UUID.randomUUID().toString();
 
-        try (IMqttClient client = new MqttClient("tcp://ems.nhnacademy.com:1883", id)) {
+        try (IMqttClient client = new MqttClient(URI, id)) {
             client.connect();
             for (Wire wire : outWires) {
                 client.subscribe("#", (topic, msg) -> {
@@ -38,7 +58,6 @@ public class MqttInNode extends Node implements Output {
                     object.put("topic",topic);
                     object.put("payload", msg);
                     wire.getBq().add(object);
-                    log.info("topic : {}\n payload : {}", topic, msg);
                 });
             }
             
@@ -49,9 +68,13 @@ public class MqttInNode extends Node implements Output {
             client.disconnect();
         } catch (Exception e) {
             log.info("{}", e);
+            Thread.currentThread().interrupt();
         }
     }
 
+    /*
+     * process를 실행한다
+     */
     @Override
     public void run() {
         process();
@@ -62,6 +85,6 @@ public class MqttInNode extends Node implements Output {
         MqttInNode mqttInNode = new MqttInNode();
         Wire wire = new Wire();
         mqttInNode.wireOut(wire);
-        mqttInNode.run();
+        mqttInNode.start();
     } */
 }
