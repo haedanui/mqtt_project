@@ -18,6 +18,21 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class MqttInNode extends Node implements Output {
     private final Set<Wire> outWires = new HashSet<>();
+    private final String URI;
+    
+    /*
+     * 기본 URI = tcp://ems.nhnacademy.com:1883
+     */
+    public MqttInNode() {
+        URI = "tcp://ems.nhnacademy.com:1883";
+    }
+
+    /*
+     * 사용자 지정 uri
+     */
+    public MqttInNode(String uri) {
+        URI = uri;
+    }
 
     /*
      * wire 연결
@@ -35,7 +50,7 @@ public class MqttInNode extends Node implements Output {
         
         String id = UUID.randomUUID().toString();
 
-        try (IMqttClient client = new MqttClient("tcp://ems.nhnacademy.com:1883", id)) {
+        try (IMqttClient client = new MqttClient(URI, id)) {
             client.connect();
             for (Wire wire : outWires) {
                 client.subscribe("#", (topic, msg) -> {
