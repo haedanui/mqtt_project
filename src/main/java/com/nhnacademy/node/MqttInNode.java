@@ -35,14 +35,14 @@ public class MqttInNode extends Node implements Output {
             for (Wire wire : outWires) {
                 client.subscribe("#", (topic, msg) -> {
                     JSONObject object = new JSONObject();
-                    object.put("topic",topic);
+                    object.put("topic", topic);
                     object.put("payload", msg);
                     wire.getBq().add(object);
-                    log.info("topic : {}\n payload : {}", topic, msg);
+                    // log.info("topic : {}\n payload : {}", topic, msg);
                 });
             }
-            
-            while(!Thread.currentThread().isInterrupted()) {
+
+            while (!Thread.currentThread().isInterrupted()) {
                 Thread.sleep(100);
             }
 
@@ -57,11 +57,13 @@ public class MqttInNode extends Node implements Output {
         process();
 
     }
-    
-    /* public static void main(String[] args) {
-        MqttInNode mqttInNode = new MqttInNode();
-        Wire wire = new Wire();
-        mqttInNode.wireOut(wire);
-        mqttInNode.run();
-    } */
+
+    /*
+     * public static void main(String[] args) {
+     * MqttInNode mqttInNode = new MqttInNode();
+     * Wire wire = new Wire();
+     * mqttInNode.wireOut(wire);
+     * mqttInNode.run();
+     * }
+     */
 }

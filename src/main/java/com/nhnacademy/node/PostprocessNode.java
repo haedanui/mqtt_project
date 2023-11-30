@@ -6,9 +6,7 @@ import org.json.JSONObject;
 
 import com.nhnacademy.Config;
 import com.nhnacademy.Wire;
-import java.lang.Thread;
 
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,6 +48,7 @@ public class PostprocessNode extends FunctionNode {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 process();
+                log.trace("postprocess node running");
                 Thread.sleep(500);
             } catch (Exception e) {
                 log.warn(e.getMessage());
@@ -65,17 +64,22 @@ public class PostprocessNode extends FunctionNode {
     @Override
     public void process() {
 
+        log.trace("postprocess node start");
         String allowedSeneor = Config.getCurrentConfig().getString("s");
         String[] sensorArray = allowedSeneor.trim().split(",");
+
         for (Wire data : getInWires()) {
             var bq = data.getBq();
+
             if (!bq.isEmpty()) {
-                JSONObject preprocessData = bq.poll();
-                branchData = preprocessData.getJSONObject("tags").getString("branch"); // 지사
-                placeData = preprocessData.getJSONObject("tags").getString("place"); // 위치
-                devEuiData = preprocessData.getJSONObject("deviceInfo").getString("devEui"); // 장비 식별 번호
-                timeData = preprocessData.getJSONObject("payload").getString("time"); // 시간
-                JSONObject objectData = preprocessData.getJSONObject("object"); // object data
+                JSONObject preprocessDatadepth1 = bq.poll();
+                JSONObject payloadData = preprocessDatadepth1.getJSONObject("payload");
+                JSONObject tagsData = payloadData.getJSONObject("deviceInfo").getJSONObject("tags");
+                branchData = tagsData.getString("branch"); // 지사
+                placeData = tagsData.getString("place"); // 위치
+                devEuiData = payloadData.getJSONObject("deviceInfo").getString("devEui"); // 장비 식별 번호
+                timeData = preprocessDatadepth1.getJSONObject("payload").getString("time"); // 시간
+                JSONObject objectData = payloadData.getJSONObject("object"); // object data
                 key = objectData.keySet();
 
                 for (String key1 : objectData.keySet()) {
