@@ -22,7 +22,4 @@ public abstract class Node implements Runnable {
 
     public abstract void process();
 
-    public void start() {
-        thread.start();
-    }
 }
