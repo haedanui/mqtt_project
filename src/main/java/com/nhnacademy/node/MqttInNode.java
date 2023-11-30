@@ -14,6 +14,7 @@ import com.nhnacademy.Wire;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
 @Slf4j
 @Getter
 public class MqttInNode extends Node implements Output {
@@ -55,8 +56,10 @@ public class MqttInNode extends Node implements Output {
             for (Wire wire : outWires) {
                 client.subscribe("#", (topic, msg) -> {
                     JSONObject object = new JSONObject();
-                    object.put("topic",topic);
-                    object.put("payload", msg);
+                    JSONObject jsonTopic = new JSONObject(topic);
+                    JSONObject jsonmsg = new JSONObject(new String(msg.getPayload()));
+                    object.put("topic",jsonTopic);
+                    object.put("payload", jsonmsg);
                     wire.getBq().add(object);
                 });
             }
