@@ -27,14 +27,14 @@ public class PreprocessNode extends FunctionNode {
     public boolean checkTopic(JSONObject target) {
         String[] targetTopic = target.getString("topic").split("/".trim());
         for (int i = 0; i < targetTopic.length; i++) {
-            if ((sortTopic[i].equals(targetTopic[i])) || (sortTopic[i].equals("+"))) {
-                return true;
+            if ((!sortTopic[i].equals(targetTopic[i])) || (!sortTopic[i].equals("+"))) {
+                return false;
             }
-            if (sortTopic[i].equals("#")) {
+            if (sortTopic[i].equals("#")) {//--an app/# app/ppap/abc
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     public boolean checkSensor(JSONObject target) {
