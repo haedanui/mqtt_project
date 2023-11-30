@@ -49,6 +49,7 @@ public class MqttOutNode extends Node implements Input {
             client.disconnect();
         } catch (Exception e) {
             log.info("{}", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -78,7 +79,7 @@ public class MqttOutNode extends Node implements Input {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        outNode.run();
+        outNode.start();
     } */
 }
 

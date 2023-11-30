@@ -1,13 +1,11 @@
 package com.nhnacademy.node;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.json.JSONObject;
 
 import com.nhnacademy.Output;
@@ -28,6 +26,7 @@ public class MqttInNode extends Node implements Output {
 
     @Override
     public void process() {
+        
         String id = UUID.randomUUID().toString();
 
         try (IMqttClient client = new MqttClient("tcp://ems.nhnacademy.com:1883", id)) {
@@ -49,6 +48,7 @@ public class MqttInNode extends Node implements Output {
             client.disconnect();
         } catch (Exception e) {
             log.info("{}", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -62,6 +62,6 @@ public class MqttInNode extends Node implements Output {
         MqttInNode mqttInNode = new MqttInNode();
         Wire wire = new Wire();
         mqttInNode.wireOut(wire);
-        mqttInNode.run();
+        mqttInNode.start();
     } */
 }
