@@ -14,7 +14,6 @@ import com.nhnacademy.Wire;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
 @Slf4j
 @Getter
 public class MqttInNode extends Node implements Output {
@@ -83,3 +82,4 @@ public class MqttInNode extends Node implements Output {
         process();
 
     }
+}
