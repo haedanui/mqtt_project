@@ -43,7 +43,6 @@ public class MqttInNode extends Node implements Output {
                     object.put("topic",topic);
                     object.put("payload", msg);
                     wire.getBq().add(object);
-                    log.info("topic : {}\n payload : {}", topic, msg);
                 });
             }
             
