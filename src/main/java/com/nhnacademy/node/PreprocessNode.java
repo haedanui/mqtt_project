@@ -32,14 +32,14 @@ public class PreprocessNode extends FunctionNode {
         String[] targetTopic = target.getString("topic").split("/".trim());
         log.info("preprocessNode topic is :{}", Arrays.toString(sortTopic));
         for (int i = 0; i < targetTopic.length; i++) {
-            if ((sortTopic[i].equals(targetTopic[i])) || (sortTopic[i].equals("+"))) {
-                return true;
+            if ((!sortTopic[i].equals(targetTopic[i])) || (!sortTopic[i].equals("+"))) {
+                return false;
             }
-            if (sortTopic[i].equals("#")) {
+            if (sortTopic[i].equals("#")) {//--an app/# app/ppap/abc
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     public boolean checkSensor(JSONObject target) {
