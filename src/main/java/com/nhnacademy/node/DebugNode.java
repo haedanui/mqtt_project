@@ -51,7 +51,7 @@ public class DebugNode extends Node implements Input {
                 }
                 log.info(wires.getBq().poll().toString());
             }
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             log.warn(e.getMessage());
             Thread.currentThread().interrupt();
