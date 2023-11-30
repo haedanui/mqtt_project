@@ -63,8 +63,8 @@ public class MqttInNode extends Node implements Output {
                     wire.getBq().add(object);
                 });
             }
-            
-            while(!Thread.currentThread().isInterrupted()) {
+
+            while (!Thread.currentThread().isInterrupted()) {
                 Thread.sleep(100);
             }
 
@@ -83,11 +83,3 @@ public class MqttInNode extends Node implements Output {
         process();
 
     }
-    
-    /* public static void main(String[] args) {
-        MqttInNode mqttInNode = new MqttInNode();
-        Wire wire = new Wire();
-        mqttInNode.wireOut(wire);
-        mqttInNode.start();
-    } */
-}
