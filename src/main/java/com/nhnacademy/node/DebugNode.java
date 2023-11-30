@@ -49,6 +49,7 @@ public class DebugNode extends Node implements Input {
                 if (wires.getBq().isEmpty()) {
                     continue;
                 }
+
                 log.info(wires.getBq().poll().toString());
             }
             Thread.sleep(100);

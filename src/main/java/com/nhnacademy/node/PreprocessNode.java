@@ -1,5 +1,6 @@
 package com.nhnacademy.node;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,6 +9,9 @@ import org.json.JSONObject;
 import com.nhnacademy.Config;
 import com.nhnacademy.Wire;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PreprocessNode extends FunctionNode {
 
     private Set<Wire> outWires = new HashSet<>();
@@ -26,6 +30,7 @@ public class PreprocessNode extends FunctionNode {
 
     public boolean checkTopic(JSONObject target) {
         String[] targetTopic = target.getString("topic").split("/".trim());
+        log.info("preprocessNode topic is :{}", Arrays.toString(sortTopic));
         for (int i = 0; i < targetTopic.length; i++) {
             if ((!sortTopic[i].equals(targetTopic[i])) || (!sortTopic[i].equals("+"))) {
                 return false;
@@ -43,8 +48,11 @@ public class PreprocessNode extends FunctionNode {
             if (target.has(allowedSendors[i])) {
                 count++;
             }
+            if (allowedSendors[0].equals("all")) {
+                return true;
+            }
         }
-        if (count >= 1) {
+        if (count >= 0) {
             return true;
         } else {
             return false;
@@ -65,31 +73,46 @@ public class PreprocessNode extends FunctionNode {
     @Override
     public void process() {
         setTopicSensors();
-        while (!Thread.currentThread().isInterrupted()) {
-            if (!inWires.isEmpty()) {
-                for (Wire inWire : inWires) {
-                    JSONObject beforeTest = inWire.getBq().poll();
-                    if (beforeTest != null) {
-                        if (checkSensor(beforeTest) && checkTopic(beforeTest)) {
-                            for (Wire outWire : outWires) {
-                                outWire.getBq().add(beforeTest);
-                            }
+        log.trace("preprocess node start");
+        // while (!Thread.currentThread().isInterrupted()) {
+        if (!inWires.isEmpty()) {
+            for (Wire inWire : inWires) {
+                JSONObject beforeTest = inWire.getBq().poll();
+                if (beforeTest != null) {
+                    if (checkSensor(beforeTest) && checkTopic(beforeTest)) {
+                        for (Wire outWire : outWires) {
+                            outWire.getBq().add(beforeTest);
                         }
                     }
+                } else {
+                    log.warn("JSONObject is empty");
                 }
             }
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                e.printStackTrace();
-            }
+        } else {
+            log.warn("wire is empty");
         }
+        // try {
+        // Thread.sleep(300);
+        // } catch (InterruptedException e) {
+        // Thread.currentThread().interrupt();
+        // e.printStackTrace();
+        // }
+        // }
 
     }
 
     @Override
     public void run() {
-        process();
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                log.info("preprocess node running");
+                process();
+                Thread.sleep(500);
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
+
+        }
+
     }
 }
