@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+
 public final class Config extends JSONObject {
     private static final String DEFAULT_TOPIC = "#";
     private static final String DEFAULT_ALLOWED_SENSOR = "all";
@@ -18,7 +18,5 @@ public final class Config extends JSONObject {
         put("an", topic);
         put("s", allowedSensor);
     }
-    public static Config getCurrentConfig() {
-        return currentConfig;
-    }
+
 }
