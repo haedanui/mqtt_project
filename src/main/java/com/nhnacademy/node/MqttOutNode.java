@@ -20,11 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 public class MqttOutNode extends Node implements Input {
     private final Set<Wire> inWires = new HashSet<>();
 
+    /*
+     * wire 연결
+     */
     @Override
     public void wireIn(Wire wire) {
         inWires.add(wire);
     }
 
+    /*
+     * 연결된 wire에서 data를 꺼내 localhost에 보낸다
+     */
     @Override
     public void process() {
         String id = UUID.randomUUID().toString();
@@ -56,6 +62,9 @@ public class MqttOutNode extends Node implements Input {
         }
     }
 
+    /*
+     * process를 실행한다
+     */
     @Override
     public void run() {
         process();

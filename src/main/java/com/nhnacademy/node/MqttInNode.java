@@ -19,11 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 public class MqttInNode extends Node implements Output {
     private final Set<Wire> outWires = new HashSet<>();
 
+    /*
+     * wire 연결
+     */
     @Override
     public void wireOut(Wire wire) {
         outWires.add(wire);
     }
 
+    /*
+     * 들어오는 모든 data를 연결된 wire에 넣어준다
+     */
     @Override
     public void process() {
         
@@ -52,6 +58,9 @@ public class MqttInNode extends Node implements Output {
         }
     }
 
+    /*
+     * process를 실행한다
+     */
     @Override
     public void run() {
         process();
