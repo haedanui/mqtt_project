@@ -17,8 +17,8 @@ public class Main {
         Wire w1 = new Wire();
         Wire w2 = new Wire();
 
-        var n1 = new MqttInNode();
-        var n2 = new FunctionNode(new Preprocess());
+        var n1 = new MqttInNode("MqttInNode");
+        var n2 = new FunctionNode(new Preprocess(), "Preprocess");
         // var n3 = new DebugNode();
 
         n1.wireOut(w1);
@@ -41,20 +41,22 @@ public class Main {
         // options.addOption("s", true, "");
 
         // CommandLineParser parser = new DefaultParser();
-        
-        // try {
-        //     CommandLine cmd = parser.parse(options, args);
 
-        //     if (!cmd.hasOption("c") && cmd.getOptions().length < 2) { // an, s 값을 만족하지 못할 경우.
-        //         throw new IllegalArgumentException(); // TODO 인자가 모자를 경우 발생하는 익셉션 만들기.
-        //     }
-    
-        //     if (cmd.hasOption("c")) {
-        //         Config.setCurrentConfig(new Config(cmd.getOptionValue("an"), cmd.getOptionValue("s")));
-        //     }
+        // try {
+        // CommandLine cmd = parser.parse(options, args);
+
+        // if (!cmd.hasOption("c") && cmd.getOptions().length < 2) { // an, s 값을 만족하지 못할
+        // 경우.
+        // throw new IllegalArgumentException(); // TODO 인자가 모자를 경우 발생하는 익셉션 만들기.
+        // }
+
+        // if (cmd.hasOption("c")) {
+        // Config.setCurrentConfig(new Config(cmd.getOptionValue("an"),
+        // cmd.getOptionValue("s")));
+        // }
         // } catch (Exception e) {
-        //     HelpFormatter formatter = new HelpFormatter();
-        //     formatter.printHelp("mqtt [option] ... ", options);
+        // HelpFormatter formatter = new HelpFormatter();
+        // formatter.printHelp("mqtt [option] ... ", options);
         // }
 
         run();

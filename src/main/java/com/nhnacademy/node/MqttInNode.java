@@ -75,7 +75,6 @@ public class MqttInNode extends ActiveNode implements Output {
                 } catch(JSONException e) {
                     log.warn(e.getMessage());
                 }
-                
                 for (Wire wire : outWires) {
                     wire.getBq().add(object);  
                 }
