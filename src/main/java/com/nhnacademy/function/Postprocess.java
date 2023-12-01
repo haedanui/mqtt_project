@@ -81,7 +81,8 @@ public class Postprocess implements Executable {
                 JSONObject firstpreprocessData = bq.poll();
 
                 log.info(firstpreprocessData.toString() + "test1");
-                if ("application/d/1234".equals(firstpreprocessData.get("topic"))) continue;
+                if ("application/d/1234".equals(firstpreprocessData.get("topic")))
+                    continue;
 
                 JSONObject payloadData = firstpreprocessData.getJSONObject("payload");
                 JSONObject tagsData = payloadData.getJSONObject("deviceInfo").getJSONObject("tags");
@@ -100,20 +101,21 @@ public class Postprocess implements Executable {
 
                 // branchPathData = tagsData.getString(branchPath);
                 // placePathData = tagsData.getString(placePath);
-                // devEuiPathData = payloadData.getJSONObject("deviceInfo").getString(devEuiPath);
+                // devEuiPathData =
+                // payloadData.getJSONObject("deviceInfo").getString(devEuiPath);
                 // timePathData = payloadData.getString(timePath);
 
                 Set<String> allKey = objectData.keySet(); // TODO error
                 for (String keyset : allKey) {
 
-                    Double sensorData = (Double) objectData.get(keyset);
+                    Object sensorData = objectData.get(keyset);
                     value.put(keyset, sensorData); // 값이 여러개일 경우에 대한 대처.
                     // value = objectData.get(keyset); // object의 모든 value값.
 
                 }
 
                 for (String postprocess : sensorArray) {
-                    if (key.contains(postprocess)) {
+                    if (allowedSeneor.contains("all") || key.contains(postprocess)) {
                         // log.info("check postprocess :{}", postprocess);
                         jsonData.put("topic",
                                 "data/b/" + branchData + "/p/" + placeData + "/d/" + devEuiData + "/t/");
@@ -123,7 +125,7 @@ public class Postprocess implements Executable {
                         jsonData.put("payload", jsonPayload);
                     }
                 }
-                
+
                 log.info(jsonData.toString() + "test2");
 
                 for (Wire outWire : outWires) {
