@@ -31,7 +31,7 @@ public abstract class ActiveNode extends Node implements Runnable {
 
     public void preprocess() {
     }
-    
+
     public void postprocess() {
     }
 
@@ -39,14 +39,14 @@ public abstract class ActiveNode extends Node implements Runnable {
         preprocess();
 
         while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    process();
+            try {
+                process();
 
-                    Thread.sleep(interval);
-                } catch (Exception ignore) {
-                    Thread.currentThread().interrupt();
-                }
+                Thread.sleep(interval);
+            } catch (Exception ignore) {
+                Thread.currentThread().interrupt();
             }
+        }
 
         postprocess();
     }

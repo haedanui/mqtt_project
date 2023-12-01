@@ -19,7 +19,8 @@ public class FunctionNode extends ActiveNode implements Input, Output {
 
     private final Executable function;
 
-    public FunctionNode(Executable function) {
+    public FunctionNode(Executable function, String name) {
+        super(name);
         this.function = function;
     }
 
