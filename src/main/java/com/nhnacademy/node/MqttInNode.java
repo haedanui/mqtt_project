@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.nhnacademy.Output;
@@ -57,53 +58,37 @@ public class MqttInNode extends ActiveNode implements Output {
     }
 
     /*
-     * id를 가져올 수 있도록 한다.
-     */
-    public String getMqttId() {
-        return getId().toString();
-    }
 
-    /*
      * 들어오는 모든 data를 연결된 wire에 넣어준다
      */
     @Override
-    public void process() {
-        try (IMqttClient client = new MqttClient(uri, getMqttId())){
+    public void preprocess() {
+        try (IMqttClient client = new MqttClient(uri, getId().toString())){
             client.connect();
 
-            client.subscribe("application/#", (topic, msg) -> {
+            client.subscribe("#", (topic, msg) -> {
                 JSONObject object = new JSONObject();
 
-                log.info("dddddd - {}",msg);
-                object.put("topic", new JSONObject(topic));
-                object.put("payload", new JSONObject(msg.toString()));
-
-                log.info("object: {}",object);
+                try {
+                    object.put("topic", topic);
+                    object.put("payload", new JSONObject(msg.toString()));
+                } catch(JSONException e) {
+                    log.warn(e.getMessage());
+                }
                 
                 for (Wire wire : outWires) {
-                    
-                    // String sTopic = "\""+topic + "\"";
-                    // String sMsg = "\""+ new String(msg.getPayload()) + "\"";
-
-                    // JSONObject jsonTopic = new JSONObject("{\"topic\":\""+topic+"\", \"payload\":\""+new String(msg.getPayload())+"\"}");
-                    // JSONObject object = new JSONObject();
-                    // object.put("topic", sTopic);
-                    // object.put("payload", sMsg);
-
-                    wire.getBq().add(object);
-                    // log.info("object: {}",jsonTopic);
-                    
-
+                    wire.getBq().add(object);  
                 }
             });
-            while(!Thread.currentThread().isInterrupted()){
-                Thread.sleep(100);
-            }
+            
         } catch (Exception e) {
             log.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
 
+    }
+    @Override
+    public void process(){
     }
 
     public static void main(String[] args) {
