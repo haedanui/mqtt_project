@@ -34,6 +34,7 @@ public class MqttOutNode extends ActiveNode implements Input {
      * 사용자 지정 constructors
      */
     public MqttOutNode(String uri) {
+        super("MqttOuNode");
         this.uri = uri;
     }
 
