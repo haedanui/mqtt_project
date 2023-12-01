@@ -38,6 +38,7 @@ public class MqttInNode extends ActiveNode implements Output {
     }
 
     public MqttInNode(String uri, String topic) {
+        super("MqttInNode");
         this.uri = uri;
         fromTopic = topic;
     }
