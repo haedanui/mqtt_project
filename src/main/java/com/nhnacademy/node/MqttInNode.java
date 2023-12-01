@@ -2,10 +2,9 @@ package com.nhnacademy.node;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.json.JSONObject;
 
 import com.nhnacademy.Output;
@@ -14,25 +13,40 @@ import com.nhnacademy.Wire;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
 @Slf4j
 @Getter
 public class MqttInNode extends Node implements Output {
+    private static final String DEFAULT_URI = "tcp://ems.nhnacademy.com:1883";
+    private static final String DEFAULT_TOPIC = "#";
+
     private final Set<Wire> outWires = new HashSet<>();
-    private final String URI;
+    private final String uri;
+    private String fromTopic;
     
     /*
      * 기본 URI = tcp://ems.nhnacademy.com:1883
      */
     public MqttInNode() {
-        URI = "tcp://ems.nhnacademy.com:1883";
+        this(DEFAULT_URI, DEFAULT_TOPIC);
     }
 
     /*
-     * 사용자 지정 uri
+     * 사용자 지정 constructors
      */
     public MqttInNode(String uri) {
-        URI = uri;
+        this(uri, DEFAULT_TOPIC);
+    }
+
+    public MqttInNode(String uri, String topic) {
+        this.uri = uri;
+        fromTopic = topic;
+    }
+
+    /*
+     * topic 설정하기
+     */
+    public void setTopic(String topic){
+        fromTopic = topic;
     }
 
     /*
@@ -44,42 +58,53 @@ public class MqttInNode extends Node implements Output {
     }
 
     /*
+     * id를 가져올 수 있도록 한다.
+     */
+    public String getMqttId() {
+        return getId().toString();
+    }
+
+    /*
      * 들어오는 모든 data를 연결된 wire에 넣어준다
      */
     @Override
     public void process() {
-        
-        String id = UUID.randomUUID().toString();
-
-        try (IMqttClient client = new MqttClient(URI, id)) {
+        try (IMqttClient client = new MqttClient(uri, getMqttId())){
             client.connect();
-            for (Wire wire : outWires) {
-                client.subscribe("#", (topic, msg) -> {
-                    JSONObject object = new JSONObject();
-                    JSONObject jsonTopic = new JSONObject(topic);
-                    JSONObject jsonmsg = new JSONObject(new String(msg.getPayload()));
-                    object.put("topic",jsonTopic);
-                    object.put("payload", jsonmsg);
-                    wire.getBq().add(object);
-                });
-            }
 
-            while (!Thread.currentThread().isInterrupted()) {
+            client.subscribe(fromTopic, (topic, msg) -> {
+                for (Wire wire : outWires) {
+                    // String sTopic = "\""+topic + "\"";
+                    // String sMsg = "\""+ new String(msg.getPayload()) + "\"";
+
+                    JSONObject jsonTopic = new JSONObject("{\"topic\":\""+topic+"\", \"payload\":\""+new String(msg.getPayload())+"\"}");
+                    // JSONObject object = new JSONObject();
+                    // object.put("topic", jsonTopic);
+                    // object.put("payload", jsonmsg);
+
+                    wire.getBq().add(jsonTopic);
+                    log.info("object: {}",jsonTopic);
+                }
+            });
+            while(!Thread.currentThread().isInterrupted()){
                 Thread.sleep(100);
             }
-
-            client.disconnect();
         } catch (Exception e) {
-            log.info("{}", e);
+            log.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
+
     }
 
-    /*
-     * process를 실행한다
-     */
+    public static void main(String[] args) {
+        MqttInNode mqttInNode = new MqttInNode();
+        Wire wire = new Wire();
+        mqttInNode.wireOut(wire);
+        mqttInNode.start();
+    }
+
     @Override
     public void run() {
         process();
-
     }
+}
