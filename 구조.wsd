@@ -2,10 +2,18 @@
 
 abstract class Node {
     UUID id;
-    Thread thread;
     long createdTime;
+}
+
+abstract class ActiveNode {
+    Thread thread;
+    long startTime;
 
     abstract void process();
+
+    preprocess();
+    postprocess();
+
 }
 
 class Wire {
@@ -24,8 +32,7 @@ interface Input {
     void wireIn();
 }
 
-interface Executable {
-    JSONObject execute();
+interface Consumer {
 }
 
 class FunctionNode {
@@ -60,13 +67,12 @@ Output <|.. FunctionNode
 Input <|.. FunctionNode
 Input <|.. DebugNode
 
-Executable <|.. preprocessor
-Executable <|.. postprocessor
-
 Wire *-- FunctionNode
 Wire *-- MqttInNode
 Wire *-- MqttOutNode
 Wire *-- DebugNode
+
+FunctionNode <|-- postprocessor
 
 
 @enduml

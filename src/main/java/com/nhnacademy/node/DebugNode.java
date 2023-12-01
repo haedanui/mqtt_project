@@ -3,25 +3,36 @@ package com.nhnacademy.node;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.json.JSONObject;
+
 import com.nhnacademy.Input;
 import com.nhnacademy.Wire;
 
-public class DebugNode extends Node implements Input {
-    private Set<Wire> inputWire = new HashSet<>();
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+@Getter
+@Slf4j
+public class DebugNode extends ActiveNode implements Input {
+    private Set<Wire> inputWires = new HashSet<>();
 
     @Override
     public void wireIn(Wire wire) {
-        // TODO Auto-generated method stub
+        inputWires.add(wire);
     }
 
     @Override
     public void process() {
-        // TODO Auto-generated method stub
-    }
+        try {
+            for (Wire wire : inputWires) {
+                var messageQ = wire.getBq();
 
-    @Override
-    public void run() {
-        // TODO Auto-generated method stub
-        
+                JSONObject msg = messageQ.poll();
+
+                log.info(msg.toString());
+            }
+            
+        } catch (Exception ignore) {
+        }
     }
 }

@@ -9,7 +9,7 @@ import com.nhnacademy.Wire;
 import lombok.Getter;
 
 @Getter
-public class MqttOutNode extends Node implements Input {
+public class MqttOutNode extends ActiveNode implements Input {
     private final Set<Wire> inWires = new HashSet<>();
 
     @Override

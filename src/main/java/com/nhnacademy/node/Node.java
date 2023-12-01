@@ -5,16 +5,12 @@ import java.util.UUID;
 import lombok.Getter;
 
 @Getter
-public abstract class Node implements Runnable {
+public abstract class Node {
     private final UUID id;
-    private final Thread thread;
     private final long createdTime;
 
     protected Node() {
         this.id = UUID.randomUUID();
-        this.thread = new Thread(this);
         this.createdTime = System.currentTimeMillis();
     }
-
-    public abstract void process();
 }

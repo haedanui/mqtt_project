@@ -1,9 +1,7 @@
 package com.nhnacademy.function;
 
 import java.util.Set;
-import java.util.concurrent.BlockingDeque;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.nhnacademy.Config;
@@ -29,34 +27,10 @@ public class Preprocess implements Executable {
             if (filterList[i].equals(a)) return false;
 
             if (!filterList[i].equals(topicList[i]) && !filterList[i].equals(b)) return true;
-            if (filterList[i].equals(b) && filterList.length >= topicList.length) return true;
+            if (filterList[i].equals(b) && i + 1 == len && filterList.length == len && topicList.length != filterList.length) return true;
         }
 
         return false;
-    }
-
-    public static void main(String[] args) {
-        String a1 = "application/#";
-        String a2 = "application/+";
-        String a3 = "#";
-        String a4 = "application/+/#";
-
-        String b = "application/9a87910d-fc6c-4f10-a6fd-a626a1ca6b4a/device/24e124136d151547/event/up";
-        String c = "application/9a87910d-fc6c-4f10-a6fd-a626a1ca6b4a";
-        String d = "kr/gateway";
-
-        System.out.println(enableTopic(a4, b));
-
-        System.out.println(enableTopic(a1, b)); // true
-        System.out.println(enableTopic(a1, c)); // true
-        System.out.println(enableTopic(a2, c)); // true
-
-        System.out.println(enableTopic(a3, d)); // true
-        System.out.println(enableTopic(a3, c)); // true
-
-        System.out.println(enableTopic(a2, b)); // false
-        System.out.println(enableTopic(a2, c)); // true
-        System.out.println(enableTopic(a2, d)); // false
     }
 
     @Override
