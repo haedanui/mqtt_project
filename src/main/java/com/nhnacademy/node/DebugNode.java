@@ -15,6 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DebugNode extends ActiveNode implements Input {
     private Set<Wire> inputWires = new HashSet<>();
+    static long  number = 0;
+    public DebugNode(){
+        super("debug" + number);
+        number++;
+    }
 
     /**
      * 와이어를 inputWire Set 에 넣는다.
