@@ -66,7 +66,6 @@ public class Postprocess implements Executable {
      * => payload는 mqttReceivedMessage? : 내 역할 아님 pass
      * 
      * terminal에서 입력한 걸 받아서 path로 사용. 확장성을 높여봄.
-     * 
      */
     @Override
     public void execute(Set<Wire> inWires, Set<Wire> outWires) {
@@ -77,8 +76,8 @@ public class Postprocess implements Executable {
             var bq = wire.getBq();
 
             if (!bq.isEmpty()) {
-                JSONObject preprocessDatadepth1 = bq.poll(); // TODO rename
-                JSONObject payloadData = preprocessDatadepth1.getJSONObject("payload");
+                JSONObject firstpreprocessData = bq.poll();
+                JSONObject payloadData = firstpreprocessData.getJSONObject("payload");
                 JSONObject tagsData = payloadData.getJSONObject("deviceInfo").getJSONObject("tags");
 
                 branchData = tagsData.getString("branch"); // 지사
