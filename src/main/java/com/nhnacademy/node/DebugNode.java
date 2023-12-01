@@ -9,8 +9,9 @@ import com.nhnacademy.Wire;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * wireIn 함수
- * 잘 이해가 가지 않는다면 노드레드의 초록색 Debug 블럭을 생각하면 된다.
+ * 이전 노드에 있는 WireOut을 Wire클래스를 통해 같은 Blocking Queue를 공유하며
+ * WireOut을 통해 Queue에 들어온 자료를 받아 출력하는 노드이다.
+ * 잘 이해가 가지 않는다면 Node-Red의 초록색 Debug 블럭을 생각하면 된다.
  */
 @Slf4j
 public class DebugNode extends Node implements Input {
@@ -26,7 +27,7 @@ public class DebugNode extends Node implements Input {
     }
 
     /**
-     * 들어온 스레드를 시작한다.
+     * 들어온 스레드를 시작하며 인터럽트가 들어올때까지 반복한다.
      */
     @Override
     public void run() {
@@ -40,7 +41,7 @@ public class DebugNode extends Node implements Input {
     }
 
     /**
-     * input와이어에 있는 큐가 비어있는 동안은 메시지를 출력하지 않다가 큐에 메시지가 들어오면 출력함
+     * input와이어에 있는 큐가 비어있는 동안 메시지를 출력하지 않다가 큐에 메시지가 들어오면 해당 메시지를 로그로 출력함
      */
     @Override
     public void process() {

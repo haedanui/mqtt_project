@@ -63,6 +63,9 @@ Input <|.. DebugNode
 Executable <|.. preprocessor
 Executable <|.. postprocessor
 
+FunctionNode <|-- preprocessor
+FunctionNode <|-- postprocessor
+
 Wire *-- FunctionNode
 Wire *-- MqttInNode
 Wire *-- MqttOutNode
