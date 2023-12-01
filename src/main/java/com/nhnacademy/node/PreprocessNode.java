@@ -30,20 +30,23 @@ public class PreprocessNode extends FunctionNode {
 
     public boolean checkTopic(JSONObject target) {
         String[] targetTopic = target.getString("topic").split("/".trim());
+        log.info("preprocessNode topic is :{}", Arrays.toString(targetTopic));
         log.info("preprocessNode topic is :{}", Arrays.toString(sortTopic));
         for (int i = 0; i < targetTopic.length; i++) {
+            if (sortTopic[i].equals("#")) {// --an app/# app/ppap/abc
+                return true;
+            }
             if ((!sortTopic[i].equals(targetTopic[i])) || (!sortTopic[i].equals("+"))) {
                 return false;
             }
-            if (sortTopic[i].equals("#")) {//--an app/# app/ppap/abc
-                return true;
-            }
+            
         }
         return true;
     }
 
     public boolean checkSensor(JSONObject target) {
         int count = 0;
+        //log.info("preprocessNode topic is :{}", Arrays.toString(allowedSendors));
         for (int i = 0; i < allowedSendors.length; i++) {
             if (target.has(allowedSendors[i])) {
                 count++;
@@ -73,24 +76,35 @@ public class PreprocessNode extends FunctionNode {
     @Override
     public void process() {
         setTopicSensors();
-        log.trace("preprocess node start");
+        // log.trace("preprocess node start");
         // while (!Thread.currentThread().isInterrupted()) {
-        if (!inWires.isEmpty()) {
-            for (Wire inWire : inWires) {
-                JSONObject beforeTest = inWire.getBq().poll();
-                if (beforeTest != null) {
-                    if (checkSensor(beforeTest) && checkTopic(beforeTest)) {
-                        for (Wire outWire : outWires) {
-                            outWire.getBq().add(beforeTest);
-                        }
+        
+        for (Wire inWire : inWires) {
+            JSONObject beforeTest;
+            try {
+                // beforeTest = inWire.getBq().take();
+                if (inWire.getBq().isEmpty()) continue;
+
+                beforeTest = inWire.getBq().poll();
+
+                //log.info(inWire.getBq().size() + "");
+                //og.info(beforeTest+"");
+                log.info("checkTopic : "+checkTopic(beforeTest)+"");
+                log.info("checkSensor : "+checkSensor(beforeTest)+"");
+                if (checkSensor(beforeTest) && checkTopic(beforeTest)) {
+                    for (Wire outWire : outWires) {
+                        outWire.getBq().add(beforeTest);
+                        log.info(outWire.getBq().size()+"");
                     }
-                } else {
-                    log.warn("JSONObject is empty");
                 }
+                   
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-        } else {
-            log.warn("wire is empty");
+
         }
+        
         // try {
         // Thread.sleep(300);
         // } catch (InterruptedException e) {
@@ -103,11 +117,12 @@ public class PreprocessNode extends FunctionNode {
 
     @Override
     public void run() {
+
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                log.info("preprocess node running");
+                // log.info("preprocess node running");
                 process();
-                Thread.sleep(500);
+                Thread.sleep(300);
             } catch (Exception e) {
                 log.warn(e.getMessage());
             }

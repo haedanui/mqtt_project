@@ -52,14 +52,26 @@ public class MqttInNode extends Node implements Output {
 
         try (IMqttClient client = new MqttClient(URI, id)) {
             client.connect();
-            for (Wire wire : outWires) {
-                client.subscribe("#", (topic, msg) -> {
+            // for (Wire wire : outWires) {
+            //     client.subscribe("#", (topic, msg) -> {
+            //         JSONObject object = new JSONObject();
+            //         object.put("topic", topic);
+            //         object.put("payload", msg);
+            //         wire.getBq().add(object);
+            //         log.info(wire.getBq().size()+wire.toString());
+            //     });
+            // }
+
+            
+            client.subscribe("#", (topic, msg) -> {
+                for (Wire wire : outWires) {
                     JSONObject object = new JSONObject();
                     object.put("topic", topic);
                     object.put("payload", msg);
                     wire.getBq().add(object);
-                });
-            }
+                    log.info(wire.getBq().size()+wire.toString());
+                }
+        });
 
             while (!Thread.currentThread().isInterrupted()) {
                 Thread.sleep(100);

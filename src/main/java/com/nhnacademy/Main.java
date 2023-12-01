@@ -22,42 +22,42 @@ public class Main {
         Wire cTod = new Wire();
         Wire cDebugWire = new Wire();
 
-        var a = new MqttInNode();
-        var b = new PreprocessNode();
-        var c = new PostprocessNode();
-        var d = new MqttOutNode();
-        var Adebug = new DebugNode();
-        var Bdebug = new DebugNode();
-        var Cdebug = new DebugNode();
+        var inNode = new MqttInNode();
+        var preNode = new PreprocessNode();
+        var postNode = new PostprocessNode();
+        var outNode = new MqttOutNode();
+        var inNodedebug = new DebugNode();
+        var preNodedebug = new DebugNode();
+        var postNodedebug = new DebugNode();
         // var Ddebug = new DebugNode();
 
-        a.wireOut(aTob);
-        b.wireIn(aTob);
+        inNode.wireOut(aTob);
+        preNode.wireIn(aTob);
 
-        a.wireOut(aDebugWire);
-        Adebug.wireIn(aDebugWire);
+        //inNode.wireOut(aDebugWire);
+        //inNodedebug.wireIn(aDebugWire);
 
-        b.wireOut(bToc);
-        c.wireIn(bToc);
+        //preNode.wireOut(bToc);
+        //postNode.wireIn(bToc);
 
-        b.wireOut(bDebugWire);
-        Bdebug.wireIn(bDebugWire);
+        preNode.wireOut(bDebugWire);
+        preNodedebug.wireIn(bDebugWire);
 
-        c.wireIn(bToc);
-        c.wireOut(cTod);
+        //postNode.wireIn(bToc);
+        //postNode.wireOut(cTod);
 
-        c.wireOut(cDebugWire);
-        Cdebug.wireIn(cDebugWire);
+        //postNode.wireOut(cDebugWire);
+        //postNodedebug.wireIn(cDebugWire);
 
-        d.wireIn(cTod);
+        //outNode.wireIn(cTod);
 
-        a.start();
-        // Adebug.start();
-        b.start();
-        Bdebug.start();
-        c.start();
-        Cdebug.start();
-        // d.start();
+        inNode.start();
+        inNodedebug.start();
+        preNode.start();
+        preNodedebug.start();
+        postNode.start(); 
+        postNodedebug.start();
+        outNode.start();
     }
 
     public static void main(String[] args) {
