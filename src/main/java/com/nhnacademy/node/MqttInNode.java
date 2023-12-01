@@ -22,6 +22,8 @@ public class MqttInNode extends ActiveNode implements Output {
     private final Set<Wire> outWires = new HashSet<>();
     private String uri;
 
+    private IMqttClient client;
+
     public MqttInNode() {
         this(DEFAULT_URI);
     }
@@ -37,17 +39,24 @@ public class MqttInNode extends ActiveNode implements Output {
 
     @Override
     public void process() {
+    }
+
+    @Override
+    public void preprocess() {
         String clientId = UUID.randomUUID().toString();
-        try (IMqttClient client = new MqttClient(uri, clientId);) {
+        try {
+            client = new MqttClient(uri, clientId);
             client.connect();
 
-            client.subscribe("#", (topic, payload) -> {
-                // log.info(topic);
+            client.subscribe("applictaion/#", (topic, payload) -> {
+                log.info("payload {}", payload.toString());
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("topic", topic);
-                jsonObject.put("payload", payload);
+                jsonObject.put("payload", new JSONObject(payload.toString()));
 
+                log.info("asdasd {}", jsonObject);
+                
                 for (Wire wire : outWires) {
                     var messageQ = wire.getBq();
 
@@ -55,6 +64,7 @@ public class MqttInNode extends ActiveNode implements Output {
                 }
             });
         } catch (Exception ignore) {
+            log.warn(ignore.getMessage());
         }
     }
 }

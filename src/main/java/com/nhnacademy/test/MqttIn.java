@@ -33,11 +33,15 @@ public class MqttIn implements Runnable {
         try (IMqttClient client = new MqttClient(uri, "test");) {
             client.connect();
 
+            // Thread.sleep(10_000);
+
             client.subscribe("application/#", (topic, payload) -> {
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("topic", topic);
                 jsonObject.put("payload", payload);
+
+                 jsonObject.getJSONObject("payload").get("devieInfo");
 
                 System.out.println(); // break point 걸고 jsonObject안의 값 확인하면서 하시면 됩니다.
             });
