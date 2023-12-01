@@ -7,29 +7,55 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.eclipse.paho.client.mqttv3.util.Debug;
 
+import com.nhnacademy.function.Postprocess;
 import com.nhnacademy.function.Preprocess;
 import com.nhnacademy.node.DebugNode;
 import com.nhnacademy.node.FunctionNode;
 import com.nhnacademy.node.MqttInNode;
+import com.nhnacademy.node.MqttOutNode;
 
 public class Main {
     private static void run() {
-        Wire w1 = new Wire();
-        Wire w2 = new Wire();
+        Wire inTopre = new Wire();
+        Wire preToPost = new Wire();
+        Wire postToOut = new Wire();
+        Wire inToDebug = new Wire();
+        Wire preToDebug = new Wire();
+        Wire postToDebug = new Wire();
 
-        var n1 = new MqttInNode("MqttInNode");
-        var n2 = new FunctionNode(new Preprocess(), "Preprocess");
-        // var n3 = new DebugNode();
+        MqttInNode inNode = new MqttInNode("MqttInNode");
+        FunctionNode preFunctionNode = new FunctionNode(new Preprocess(), "PreProcess");
+        FunctionNode postFunctionNode = new FunctionNode(new Postprocess(), "PostProcess");
+        MqttOutNode outNode = new MqttOutNode("MqttOutNode");
+        DebugNode intoDebugNode = new DebugNode();
+        DebugNode preToDebugNode = new DebugNode();
+        DebugNode postToDebugNode = new DebugNode();
 
-        n1.wireOut(w1);
-        n2.wireIn(w1);
+        //정규 연결
+        inNode.wireOut(inTopre);
+        
+        preFunctionNode.wireIn(inTopre);
+        preFunctionNode.wireOut(preToPost);
 
-        // n2.wireOut(w2);
-        // n3.wireIn(w2);
+        postFunctionNode.wireIn(preToPost);
+        postFunctionNode.wireOut(postToOut);
 
-        n1.start();
-        n2.start();
-        // n3.start();
+        outNode.wireIn(postToOut);
+
+        //디버그 연결
+        //MqttIn to debug
+        inNode.wireOut(inToDebug);
+        intoDebugNode.wireIn(inToDebug);
+
+        //pre to debug
+        preFunctionNode.wireOut(preToDebug);
+        preToDebugNode.wireIn(preToDebug);
+
+        //post to debug
+        postFunctionNode.wireOut(postToDebug);
+        postToDebugNode.wireIn(postToDebug);
+
+
     }
 
     public static void main(String[] args) {
