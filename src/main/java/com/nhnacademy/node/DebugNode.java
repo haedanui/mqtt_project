@@ -14,6 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 public class DebugNode extends ActiveNode implements Input {
+
+    protected DebugNode(String name) {
+        super(name);
+    }
+
     private Set<Wire> inputWires = new HashSet<>();
 
     @Override
@@ -31,7 +36,7 @@ public class DebugNode extends ActiveNode implements Input {
 
                 log.info(msg.toString());
             }
-            
+
         } catch (Exception ignore) {
         }
     }

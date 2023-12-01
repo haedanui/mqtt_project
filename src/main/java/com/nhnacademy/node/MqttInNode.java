@@ -24,11 +24,12 @@ public class MqttInNode extends ActiveNode implements Output {
 
     private IMqttClient client;
 
-    public MqttInNode() {
-        this(DEFAULT_URI);
+    public MqttInNode(String name) {
+        this(name, DEFAULT_URI);
     }
 
-    public MqttInNode(String uri) {
+    public MqttInNode(String uri, String name) {
+        super(name);
         this.uri = uri;
     }
 
@@ -56,7 +57,7 @@ public class MqttInNode extends ActiveNode implements Output {
                 jsonObject.put("payload", new JSONObject(payload.toString()));
 
                 log.info("asdasd {}", jsonObject);
-                
+
                 for (Wire wire : outWires) {
                     var messageQ = wire.getBq();
 
