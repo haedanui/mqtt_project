@@ -44,7 +44,7 @@ public class DebugNode extends ActiveNode implements Input {
                     continue;
                 }
                 JSONObject msg = wires.getBq().poll();
-                log.info(msg.toString());
+                // log.info(msg.toString());
             }
 
         } catch (Exception ignore) {

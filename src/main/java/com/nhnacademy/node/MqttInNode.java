@@ -73,9 +73,10 @@ public class MqttInNode extends ActiveNode implements Output {
                 try {
                     object.put("topic", topic);
                     object.put("payload", new JSONObject(msg.toString()));
-                } catch(JSONException e) {
-                    log.warn(e.getMessage());
+                } catch(JSONException ignore) {
+                    // log.warn(e.getMessage());
                 }
+
                 for (Wire wire : outWires) {
                     wire.getBq().add(object);  
                 }

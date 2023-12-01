@@ -35,7 +35,8 @@ public class Preprocess implements Executable {
         return true;
     }
 
-    private static boolean enableSensor(String filter, final JSONObject target){
+    private static boolean enableSensor(String filter, final JSONObject target) {
+        if (filter.equals("all")) return true;
         /**
          * 지정된 양식 속 원하는 데이터 값이 있는지 확인하고 있다면 true를 반환해 다음 단계를 처리하게 한다.
          */
@@ -67,13 +68,18 @@ public class Preprocess implements Executable {
     
                 if (!messageQ.isEmpty()) {
                     JSONObject msg = messageQ.poll();
+
+                    // log.info(msg.toString());
                     
                     boolean allowedTopic = enableTopic(Config.getCurrentConfig().getString("an"), msg.getString("topic"));
                     boolean allowedSensor = enableSensor(Config.getCurrentConfig().getString("s"), msg);
+
+                    // log.info("{} / {}", allowedTopic, allowedSensor);
                     
-                    if (allowedTopic&&allowedSensor) {
+                    if (allowedTopic && allowedSensor) {
                         // log.info(msg.getString("topic"));
                         for (Wire outWire : outWires) {
+                            // log.info(msg.toString());
                             outWire.getBq().put(msg);
                             // log.info(outWire.getBq().size()+"");
                         }

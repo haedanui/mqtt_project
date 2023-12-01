@@ -75,8 +75,14 @@ public class Postprocess implements Executable {
         for (Wire wire : inWires) {
             var bq = wire.getBq();
 
+            // log.info("bq");
+
             if (!bq.isEmpty()) {
                 JSONObject firstpreprocessData = bq.poll();
+
+                log.info(firstpreprocessData.toString() + "test1");
+                if ("application/d/1234".equals(firstpreprocessData.get("topic"))) continue;
+
                 JSONObject payloadData = firstpreprocessData.getJSONObject("payload");
                 JSONObject tagsData = payloadData.getJSONObject("deviceInfo").getJSONObject("tags");
 
@@ -87,23 +93,23 @@ public class Postprocess implements Executable {
                 objectData = payloadData.getJSONObject("object"); // object data
                 key = objectData.keySet();
 
-                branchPath = Config.getCurrentConfig().getString("branchPath");
-                placePath = Config.getCurrentConfig().getString("placePath");
-                devEuiPath = Config.getCurrentConfig().getString("devEuiPath");
-                timePath = Config.getCurrentConfig().getString("timePath");
+                // branchPath = Config.getCurrentConfig().getString("branchPath");
+                // placePath = Config.getCurrentConfig().getString("placePath");
+                // devEuiPath = Config.getCurrentConfig().getString("devEuiPath");
+                // timePath = Config.getCurrentConfig().getString("timePath");
 
-                branchPathData = tagsData.getString(branchPath);
-                placePathData = tagsData.getString(placePath);
-                devEuiPathData = payloadData.getJSONObject("deviceInfo").getString(devEuiPath);
-                timePathData = payloadData.getString(timePath);
+                // branchPathData = tagsData.getString(branchPath);
+                // placePathData = tagsData.getString(placePath);
+                // devEuiPathData = payloadData.getJSONObject("deviceInfo").getString(devEuiPath);
+                // timePathData = payloadData.getString(timePath);
 
-                Set<String> allKey = objectData.keySet();
+                Set<String> allKey = objectData.keySet(); // TODO error
                 for (String keyset : allKey) {
-                    if (!objectData.get(keyset).equals("undefined")) {
-                        Double sensorData = (Double) objectData.get(keyset);
-                        value.put(keyset, sensorData); // 값이 여러개일 경우에 대한 대처.
-                        // value = objectData.get(keyset); // object의 모든 value값.
-                    }
+
+                    Double sensorData = (Double) objectData.get(keyset);
+                    value.put(keyset, sensorData); // 값이 여러개일 경우에 대한 대처.
+                    // value = objectData.get(keyset); // object의 모든 value값.
+
                 }
 
                 for (String postprocess : sensorArray) {
@@ -117,6 +123,9 @@ public class Postprocess implements Executable {
                         jsonData.put("payload", jsonPayload);
                     }
                 }
+                
+                log.info(jsonData.toString() + "test2");
+
                 for (Wire outWire : outWires) {
                     outWire.getBq().add(jsonData);
                 }
