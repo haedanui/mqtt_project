@@ -15,7 +15,7 @@ import com.nhnacademy.node.MqttInNode;
 import com.nhnacademy.node.MqttOutNode;
 
 public class Main {
-    private static void run() {
+    private static void testProcess() {
         Wire inTopre = new Wire();
         Wire preToPost = new Wire();
         Wire postToOut = new Wire();
@@ -23,17 +23,17 @@ public class Main {
         Wire preToDebug = new Wire();
         Wire postToDebug = new Wire();
 
-        MqttInNode inNode = new MqttInNode("MqttInNode");
+        MqttInNode inNode = new MqttInNode();
         FunctionNode preFunctionNode = new FunctionNode(new Preprocess(), "PreProcess");
         FunctionNode postFunctionNode = new FunctionNode(new Postprocess(), "PostProcess");
-        MqttOutNode outNode = new MqttOutNode("MqttOutNode");
+        MqttOutNode outNode = new MqttOutNode();
         DebugNode intoDebugNode = new DebugNode();
         DebugNode preToDebugNode = new DebugNode();
         DebugNode postToDebugNode = new DebugNode();
 
-        //정규 연결
+        // 정규 연결
         inNode.wireOut(inTopre);
-        
+
         preFunctionNode.wireIn(inTopre);
         preFunctionNode.wireOut(preToPost);
 
@@ -42,19 +42,26 @@ public class Main {
 
         outNode.wireIn(postToOut);
 
-        //디버그 연결
-        //MqttIn to debug
-        inNode.wireOut(inToDebug);
-        intoDebugNode.wireIn(inToDebug);
+        // 디버그 연결
+        // MqttIn to debug
+        // inNode.wireOut(inToDebug);
+        // intoDebugNode.wireIn(inToDebug);
 
-        //pre to debug
+        // pre to debug
         preFunctionNode.wireOut(preToDebug);
         preToDebugNode.wireIn(preToDebug);
 
-        //post to debug
-        postFunctionNode.wireOut(postToDebug);
-        postToDebugNode.wireIn(postToDebug);
+        // post to debug
+        // postFunctionNode.wireOut(postToDebug);
+        // postToDebugNode.wireIn(postToDebug);
 
+        inNode.start();
+        preFunctionNode.start();
+        postFunctionNode.start();
+        outNode.start();
+        // intoDebugNode.start();
+        preToDebugNode.start();
+        // postToDebugNode.start();
 
     }
 
@@ -85,6 +92,6 @@ public class Main {
         // formatter.printHelp("mqtt [option] ... ", options);
         // }
 
-        run();
+        testProcess();
     }
 }

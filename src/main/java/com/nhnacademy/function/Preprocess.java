@@ -68,13 +68,14 @@ public class Preprocess implements Executable {
                 if (!messageQ.isEmpty()) {
                     JSONObject msg = messageQ.poll();
                     
-                    boolean allowedTopic = enableTopic(Config.getCurrentConfig().getString("applicationName"), msg.getString("topic"));
-                    boolean allowedSensor = enableSensor(Config.getCurrentConfig().getString("allowedSensor"), msg);
+                    boolean allowedTopic = enableTopic(Config.getCurrentConfig().getString("an"), msg.getString("topic"));
+                    boolean allowedSensor = enableSensor(Config.getCurrentConfig().getString("s"), msg);
                     
                     if (allowedTopic&&allowedSensor) {
-                        log.info(msg.getString("topic"));
+                        // log.info(msg.getString("topic"));
                         for (Wire outWire : outWires) {
                             outWire.getBq().put(msg);
+                            // log.info(outWire.getBq().size()+"");
                         }
                     }
                 }

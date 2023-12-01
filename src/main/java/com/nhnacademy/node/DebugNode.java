@@ -20,10 +20,8 @@ public class DebugNode extends ActiveNode implements Input {
     }
 
     private Set<Wire> inputWires = new HashSet<>();
-    static long  number = 0;
     public DebugNode(){
-        super("debug" + number);
-        number++;
+        super("debug");
     }
 
     /**

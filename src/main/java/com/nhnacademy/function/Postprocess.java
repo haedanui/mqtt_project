@@ -108,7 +108,7 @@ public class Postprocess implements Executable {
 
                 for (String postprocess : sensorArray) {
                     if (key.contains(postprocess)) {
-                        log.info("check postprocess :{}", postprocess);
+                        // log.info("check postprocess :{}", postprocess);
                         jsonData.put("topic",
                                 "data/b/" + branchData + "/p/" + placeData + "/d/" + devEuiData + "/t/");
                         jsonPayload.put("time", timeData);

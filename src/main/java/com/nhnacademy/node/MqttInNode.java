@@ -67,7 +67,7 @@ public class MqttInNode extends ActiveNode implements Output {
         try (IMqttClient client = new MqttClient(uri, getId().toString())){
             client.connect();
 
-            client.subscribe("#", (topic, msg) -> {
+            client.subscribe(fromTopic, (topic, msg) -> {
                 JSONObject object = new JSONObject();
 
                 try {
@@ -89,13 +89,6 @@ public class MqttInNode extends ActiveNode implements Output {
     }
     @Override
     public void process(){
-    }
-
-    public static void main(String[] args) {
-        MqttInNode mqttInNode = new MqttInNode();
-        Wire wire = new Wire();
-        mqttInNode.wireOut(wire);
-        mqttInNode.start();
     }
 
 }
