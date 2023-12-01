@@ -18,5 +18,4 @@ public final class Config extends JSONObject {
         put("an", topic);
         put("s", allowedSensor);
     }
-
 }

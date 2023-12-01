@@ -20,11 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 public class MqttOutNode extends Node implements Input {
     private final Set<Wire> inWires = new HashSet<>();
 
+    /*
+     * wire 연결
+     */
     @Override
     public void wireIn(Wire wire) {
         inWires.add(wire);
     }
 
+    /*
+     * 연결된 wire에서 data를 꺼내 localhost에 보낸다
+     */
     @Override
     public void process() {
         String id = UUID.randomUUID().toString();
@@ -33,6 +39,9 @@ public class MqttOutNode extends Node implements Input {
             client.connect();
             for (Wire wire : inWires) {
                 while(!wire.getBq().isEmpty()){
+                    if(wire.getBq().peek() == null)    {
+                        continue;
+                    }
                     JSONObject object = wire.getBq().poll();
                     
                     String payload = object.getString("payload");
@@ -49,9 +58,13 @@ public class MqttOutNode extends Node implements Input {
             client.disconnect();
         } catch (Exception e) {
             log.info("{}", e);
+            Thread.currentThread().interrupt();
         }
     }
 
+    /*
+     * process를 실행한다
+     */
     @Override
     public void run() {
         process();
@@ -78,7 +91,7 @@ public class MqttOutNode extends Node implements Input {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        outNode.run();
+        outNode.start();
     } */
 }
 
