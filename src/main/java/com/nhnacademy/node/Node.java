@@ -2,6 +2,8 @@ package com.nhnacademy.node;
 
 import java.util.UUID;
 
+import org.json.JSONObject;
+
 import lombok.Getter;
 
 @Getter
@@ -13,4 +15,6 @@ public abstract class Node {
         this.id = UUID.randomUUID();
         this.createdTime = System.currentTimeMillis();
     }
+
+    abstract public JSONObject toJson();
 }
