@@ -11,6 +11,8 @@ import org.json.JSONObject;
 
 import com.nhnacademy.Output;
 import com.nhnacademy.Wire;
+import com.nhnacademy.message.JsonMessage;
+import com.nhnacademy.message.Message;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -105,8 +107,9 @@ public class MqttInNode extends ActiveNode implements Output {
                     log.warn("topic : {} json형식의 데이터가 아닙니다.", topic);
                 }
 
+                Message msg = new JsonMessage(object);
                 for (Wire wire : outWires) {
-                    wire.getBq().add(object);
+                    wire.getMessageQue().add(msg);
                 }
             });
             

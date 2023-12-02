@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import com.nhnacademy.Input;
 import com.nhnacademy.Wire;
+import com.nhnacademy.message.Message;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,11 +52,12 @@ public class DebugNode extends ActiveNode implements Input {
     public void process() {
         try {
             for (Wire wires : inputWires) {
-                if (wires.getBq().isEmpty()) {
+                if (wires.getMessageQue().isEmpty()) {
                     continue;
                 }
+                
+                Message msg = wires.getMessageQue().poll();
 
-                JSONObject msg = wires.getBq().poll();
                 log.info(msg.toString());
             }
 

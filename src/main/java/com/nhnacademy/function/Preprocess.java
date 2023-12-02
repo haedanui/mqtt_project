@@ -6,6 +6,9 @@ import org.json.JSONObject;
 
 import com.nhnacademy.Config;
 import com.nhnacademy.Wire;
+import com.nhnacademy.exception.UnsupportedDataTypeException;
+import com.nhnacademy.message.JsonMessage;
+import com.nhnacademy.message.Message;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +20,7 @@ public class Preprocess implements Executable {
     /**
      * 토픽이 필터로 설정한 값과 같다면 true를 반환해 다음 단계를 처리하게 한다.
      */
+    // TODO 계속 검사시 마다 값이 할당되는 문제 있음, 만약 장시간 돌릴시 문제가 있음으로 메모리 할당 문제 해결해햐함
     public static boolean enableTopic(String filter, final String topic) {
         if (topic == null || filter == null) throw new IllegalArgumentException();
 
@@ -58,18 +62,21 @@ public class Preprocess implements Executable {
     public void execute(Set<Wire> inWires, Set<Wire> outWires) {
         try {
             for (Wire inWire : inWires) {
-                var messageQ = inWire.getBq();
+                var messageQ = inWire.getMessageQue();
     
                 if (!messageQ.isEmpty()) {
-                    JSONObject msg = messageQ.poll();
+                    Message msg = messageQ.poll();
+                    if (!(msg instanceof JsonMessage)) throw new UnsupportedDataTypeException();
+
+                    JSONObject content = ((JsonMessage) msg).getContent();
                     
                     // TODO config rename하면서 여기도 수정해야 함.
-                    boolean isAllowedTopic = enableTopic(Config.getCurrentConfig().getString("applicationName"), msg.getString("topic"));
-                    boolean isAllowedSensor = enableSensor(Config.getCurrentConfig().getString("s"), msg.getJSONObject("payload"));
+                    boolean isAllowedTopic = enableTopic(Config.getCurrentConfig().getString("applicationName"), content.getString("topic"));
+                    boolean isAllowedSensor = enableSensor(Config.getCurrentConfig().getString("s"), content.getJSONObject("payload"));
                     
                     if (isAllowedTopic && isAllowedSensor) {
                         for (Wire outWire : outWires) {
-                            outWire.getBq().put(msg);
+                            outWire.getMessageQue().put(msg);
                         }
                     }
                 }

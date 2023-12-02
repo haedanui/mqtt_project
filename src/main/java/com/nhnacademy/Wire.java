@@ -5,14 +5,14 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.json.JSONObject;
+import com.nhnacademy.message.Message;
 
 import lombok.Getter;
 
 @Getter
 public class Wire {
     private final UUID id;
-    private final BlockingQueue<JSONObject> bq = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> messageQue = new LinkedBlockingQueue<>();
 
     public Wire() {
         id = UUID.randomUUID();

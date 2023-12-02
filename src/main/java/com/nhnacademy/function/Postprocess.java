@@ -1,6 +1,9 @@
 package com.nhnacademy.function;
 
 import com.nhnacademy.Wire;
+import com.nhnacademy.exception.UnsupportedDataTypeException;
+import com.nhnacademy.message.JsonMessage;
+import com.nhnacademy.message.Message;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,17 +60,7 @@ public class Postprocess implements Executable {
         }
     }
 
-    /*
-     * 11:30:34.551 [Thread-2] WARN com.nhnacademy.node.PostprocessNode --
-     * JSONObject["payload"] is not a JSONObject (class
-     * org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage
-     * 
-     * => payload는 mqttReceivedMessage? : 내 역할 아님 pass
-     * 
-     * terminal에서 입력한 걸 받아서 path로 사용. 확장성을 높여봄.
-     */
-    @Override
-    public void execute(Set<Wire> inWires, Set<Wire> outWires) {
+    private void init() {
         if (required == null) {
             required = new HashSet<>();
 
@@ -85,18 +78,30 @@ public class Postprocess implements Executable {
 
             required.addAll(Arrays.asList(requiredList));
         }
+    }
+
+    @Override
+    public void execute(Set<Wire> inWires, Set<Wire> outWires) {
+        init();
 
         for (Wire wire : inWires) {
-            var bq = wire.getBq();
+            var messageQ = wire.getMessageQue();
 
-            if (!bq.isEmpty()) {
-                JSONObject msg = bq.poll();
+            if (!messageQ.isEmpty()) {
+                Message msg = messageQ.poll();
+                if (!(msg instanceof JsonMessage)) throw new UnsupportedDataTypeException();
 
+                JSONObject content = ((JsonMessage) msg).getContent();
+
+                JSONObject result = new JSONObject();
                 JSONObject parsedData = new JSONObject();
-                recursive(parsedData, msg.getJSONObject("payload"));
+                recursive(parsedData, content.getJSONObject("payload"));
+
+                result.put("topic", content.get("topic"));
+                result.put("payload", parsedData);
 
                 for (Wire outWire : outWires) {
-                    outWire.getBq().add(parsedData);
+                    outWire.getMessageQue().add(new JsonMessage(result));
                 }
             }
         }
