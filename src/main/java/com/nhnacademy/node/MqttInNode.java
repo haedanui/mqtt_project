@@ -37,7 +37,7 @@ public class MqttInNode extends ActiveNode implements Output {
     }
 
     public MqttInNode(String uri, String topic) {
-        super("MqttInNode");
+        super("mqtt in");
 
         this.uri = uri;
         fromTopic = topic;
@@ -67,6 +67,7 @@ public class MqttInNode extends ActiveNode implements Output {
      * 
      *     id, type, topic, wire를 가지고 있고 필요하면 더 추가해서 사용
      */
+    @Override
     public JSONObject toJson() {
         JSONObject obj = new JSONObject();
 
@@ -101,7 +102,7 @@ public class MqttInNode extends ActiveNode implements Output {
                     object.put("topic", topic);
                     object.put("payload", new JSONObject(payload.toString()));
                 } catch(JSONException ignore) {
-                    log.warn("json형식의 데이터가 아닙니다.");
+                    log.warn("topic : {} json형식의 데이터가 아닙니다.", topic);
                 }
 
                 for (Wire wire : outWires) {
