@@ -14,14 +14,25 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 public class DebugNode extends ActiveNode implements Input {
+    private Set<Wire> inputWires = new HashSet<>();
 
-    protected DebugNode(String name) {
+    public DebugNode(String name) {
         super(name);
     }
 
-    private Set<Wire> inputWires = new HashSet<>();
-    public DebugNode(){
-        super("debug");
+    public DebugNode() {
+        this("debug");
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("id", getId());
+        obj.put("type", "debug");
+        // TODO wire 추가.
+
+        return obj;
     }
 
     /**
@@ -43,8 +54,9 @@ public class DebugNode extends ActiveNode implements Input {
                 if (wires.getBq().isEmpty()) {
                     continue;
                 }
+
                 JSONObject msg = wires.getBq().poll();
-                // log.info(msg.toString());
+                log.info(msg.toString());
             }
 
         } catch (Exception ignore) {
