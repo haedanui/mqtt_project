@@ -1,6 +1,8 @@
-package com.nhnacademy;
+package com.nhnacademy.function;
 
 import java.util.Set;
+
+import com.nhnacademy.Wire;
 
 
 @FunctionalInterface

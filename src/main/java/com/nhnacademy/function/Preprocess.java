@@ -5,7 +5,6 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import com.nhnacademy.Config;
-import com.nhnacademy.Executable;
 import com.nhnacademy.Wire;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ public class Preprocess implements Executable {
     /**
      * 토픽이 필터로 설정한 값과 같다면 true를 반환해 다음 단계를 처리하게 한다.
      */
-    private static boolean enableTopic(String filter, final String topic) {
+    public static boolean enableTopic(String filter, final String topic) {
         if (topic == null || filter == null) throw new IllegalArgumentException();
 
         var topicList = topic.split("/");
@@ -44,19 +43,15 @@ public class Preprocess implements Executable {
 
         var allowedSeneorList = allowedSensor.split(",");
 
-        // if(target.has("payload")) {
-            // JSONObject payload = target.getJSONObject("payload");
-
-            if(payload.has("object")) {
-                JSONObject object = payload.getJSONObject("object");
-
-                for(int i = 0; i < allowedSeneorList.length; i++) {
-                    if (object.has(allowedSeneorList[i])) return true;
-                }
+        int count = 0;
+        if(payload.has("object")) {
+            JSONObject object = payload.getJSONObject("object");
+            for(int i = 0; i < allowedSeneorList.length; i++) {
+                if (object.has(allowedSeneorList[i])) count++;
             }
-        // }
+        }
 
-        return false;
+        return (allowedSeneorList.length == count);
     }
 
     @Override
@@ -69,7 +64,7 @@ public class Preprocess implements Executable {
                     JSONObject msg = messageQ.poll();
                     
                     // TODO config rename하면서 여기도 수정해야 함.
-                    boolean isAllowedTopic = enableTopic(Config.getCurrentConfig().getString("an"), msg.getString("topic"));
+                    boolean isAllowedTopic = enableTopic(Config.getCurrentConfig().getString("applicationName"), msg.getString("topic"));
                     boolean isAllowedSensor = enableSensor(Config.getCurrentConfig().getString("s"), msg.getJSONObject("payload"));
                     
                     if (isAllowedTopic && isAllowedSensor) {

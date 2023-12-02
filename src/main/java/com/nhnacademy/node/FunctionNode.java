@@ -3,10 +3,12 @@ package com.nhnacademy.node;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.nhnacademy.Executable;
+import org.json.JSONObject;
+
 import com.nhnacademy.Input;
 import com.nhnacademy.Output;
 import com.nhnacademy.Wire;
+import com.nhnacademy.function.Executable;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,12 @@ public class FunctionNode extends ActiveNode implements Input, Output {
     public FunctionNode(Executable function, String name) {
         super(name);
         this.function = function;
+    } 
+
+    @Override
+    public JSONObject toJson() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override

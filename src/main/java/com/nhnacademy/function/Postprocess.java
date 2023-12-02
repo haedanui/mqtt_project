@@ -1,10 +1,9 @@
 package com.nhnacademy.function;
 
-import com.nhnacademy.Executable;
 import com.nhnacademy.Wire;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -35,28 +34,28 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Postprocess implements Executable {
+    private boolean isAllSensorDataReceived = false;
+    private Set<String> required;
 
-    Map<String, Object> value = new HashMap<>();
-    Set<String> key;
+    // TODO rename
+    // 형태는 유지하고 원하는 값만 가지고 오기위해 재귀적으로 돌림
+    private void recursive(JSONObject out, JSONObject data) {
+        Set<String> keys = data.keySet();
 
-    JSONObject jsonData = new JSONObject();
-    JSONObject jsonPayload = new JSONObject();
-    JSONObject objectData;
+        for (String key : keys) {
+            if (required.contains(key) || (isAllSensorDataReceived && key.equals("object"))) { // 모든 센서를 허용하는 경우 (object 값에 센서 데이터가 전부 들어 있음)
+                out.put(key, data.get(key));
+            }
+            else if (data.get(key) instanceof JSONObject) {
+                JSONObject temp = new JSONObject(); // TODO rename
+                recursive(temp, data.getJSONObject(key));
 
-    String branchData;
-    String placeData;
-    String devEuiData;
-    String timeData;
-
-    String branchPathData;
-    String placePathData;
-    String devEuiPathData;
-    String timePathData;
-
-    String branchPath;
-    String placePath;
-    String devEuiPath;
-    String timePath;
+                if (!temp.isEmpty()) {
+                    out.put(key, temp);
+                }
+            }
+        }
+    }
 
     /*
      * 11:30:34.551 [Thread-2] WARN com.nhnacademy.node.PostprocessNode --
@@ -69,70 +68,37 @@ public class Postprocess implements Executable {
      */
     @Override
     public void execute(Set<Wire> inWires, Set<Wire> outWires) {
-        String allowedSeneor = Config.getCurrentConfig().getString("s");
-        String[] sensorArray = allowedSeneor.trim().split(",");
+        if (required == null) {
+            required = new HashSet<>();
+
+            if (Config.getCurrentConfig().get("s").equals("all")) {
+                isAllSensorDataReceived = true;
+            }
+
+            if (!isAllSensorDataReceived) {
+                String[] allowedSeneor = Config.getCurrentConfig().getString("s").split(",");
+
+                required.addAll(Arrays.asList(allowedSeneor));
+            }
+
+            String[] requiredList = Config.getCurrentConfig().getString("required").split(",");
+
+            required.addAll(Arrays.asList(requiredList));
+        }
 
         for (Wire wire : inWires) {
             var bq = wire.getBq();
 
-            // log.info("bq");
-
             if (!bq.isEmpty()) {
-                JSONObject firstpreprocessData = bq.poll();
+                JSONObject msg = bq.poll();
 
-                log.info(firstpreprocessData.toString() + "test1");
-                if ("application/d/1234".equals(firstpreprocessData.get("topic")))
-                    continue;
-
-                JSONObject payloadData = firstpreprocessData.getJSONObject("payload");
-                JSONObject tagsData = payloadData.getJSONObject("deviceInfo").getJSONObject("tags");
-
-                branchData = tagsData.getString("branch"); // 지사
-                placeData = tagsData.getString("place"); // 위치
-                devEuiData = payloadData.getJSONObject("deviceInfo").getString("devEui"); // 장비 식별 번호
-                timeData = payloadData.getString("time"); // 시간
-                objectData = payloadData.getJSONObject("object"); // object data
-                key = objectData.keySet();
-
-                // branchPath = Config.getCurrentConfig().getString("branchPath");
-                // placePath = Config.getCurrentConfig().getString("placePath");
-                // devEuiPath = Config.getCurrentConfig().getString("devEuiPath");
-                // timePath = Config.getCurrentConfig().getString("timePath");
-
-                // branchPathData = tagsData.getString(branchPath);
-                // placePathData = tagsData.getString(placePath);
-                // devEuiPathData =
-                // payloadData.getJSONObject("deviceInfo").getString(devEuiPath);
-                // timePathData = payloadData.getString(timePath);
-
-                Set<String> allKey = objectData.keySet(); // TODO error
-                for (String keyset : allKey) {
-
-                    Object sensorData = objectData.get(keyset);
-                    value.put(keyset, sensorData); // 값이 여러개일 경우에 대한 대처.
-                    // value = objectData.get(keyset); // object의 모든 value값.
-
-                }
-
-                for (String postprocess : sensorArray) {
-                    if (allowedSeneor.contains("all") || key.contains(postprocess)) {
-                        // log.info("check postprocess :{}", postprocess);
-                        jsonData.put("topic",
-                                "data/b/" + branchData + "/p/" + placeData + "/d/" + devEuiData + "/t/");
-                        jsonPayload.put("time", timeData);
-                        jsonPayload.put("sensor", key);
-                        jsonPayload.put("value", value);
-                        jsonData.put("payload", jsonPayload);
-                    }
-                }
-
-                log.info(jsonData.toString() + "test2");
+                JSONObject parsedData = new JSONObject();
+                recursive(parsedData, msg.getJSONObject("payload"));
 
                 for (Wire outWire : outWires) {
-                    outWire.getBq().add(jsonData);
+                    outWire.getBq().add(parsedData);
                 }
             }
         }
     }
-
 }
