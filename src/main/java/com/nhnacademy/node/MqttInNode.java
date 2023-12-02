@@ -2,6 +2,8 @@ package com.nhnacademy.node;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.json.JSONException;
@@ -11,6 +13,7 @@ import com.nhnacademy.Output;
 import com.nhnacademy.Wire;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
     
 @Slf4j
@@ -21,33 +24,59 @@ public class MqttInNode extends ActiveNode implements Output {
 
     private final Set<Wire> outWires = new HashSet<>();
     private final String uri;
+
+    @Setter
     private String fromTopic;
     
-    /*
-     * 기본 URI = tcp://ems.nhnacademy.com:1883
-     */
     public MqttInNode() {
         this(DEFAULT_URI, DEFAULT_TOPIC);
     }
 
-    /*
-     * 사용자 지정 constructors
-     */
     public MqttInNode(String uri) {
         this(uri, DEFAULT_TOPIC);
     }
 
     public MqttInNode(String uri, String topic) {
         super("MqttInNode");
+
         this.uri = uri;
         fromTopic = topic;
     }
 
     /*
-     * topic 설정하기
+     *     node-red format
+     * 
+     *     {
+     *         "id": "83ccfc177b9bbf94",
+     *         "type": "mqtt in",
+     *         "z": "c14b37e58307abb9",
+     *         "name": "",
+     *         "topic": "",
+     *         "qos": "2",
+     *         "datatype": "auto-detect",
+     *         "nl": false,
+     *         "rap": true,
+     *         "rh": 0,
+     *         "inputs": 0,
+     *         "x": 310,
+     *         "y": 220,
+     *         "wires": [
+     *             []
+     *         ]
+     *     }
+     * 
+     *     id, type, topic, wire를 가지고 있고 필요하면 더 추가해서 사용
      */
-    public void setTopic(String topic){
-        fromTopic = topic;
+    public JSONObject toJson() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("id", getId());
+        obj.put("type", "mqtt in");
+        obj.put("topic", fromTopic);
+
+        // TODO wire 추가.
+
+        return obj;
     }
 
     /*
@@ -58,38 +87,34 @@ public class MqttInNode extends ActiveNode implements Output {
         outWires.add(wire);
     }
 
-    /*
-
-     * 들어오는 모든 data를 연결된 wire에 넣어준다
-     */
     @Override
     public void preprocess() {
-        try (IMqttClient client = new MqttClient(uri, getId().toString())){
+        UUID clientId = UUID.randomUUID(); // node, client id를 분리해서 사용하기 위해 따로 받았습니다.
+
+        try (IMqttClient client = new MqttClient(uri, clientId.toString())) {
             client.connect();
 
-            client.subscribe(fromTopic, (topic, msg) -> {
+            client.subscribe(fromTopic, (topic, payload) -> {
                 JSONObject object = new JSONObject();
 
                 try {
                     object.put("topic", topic);
-                    object.put("payload", new JSONObject(msg.toString()));
+                    object.put("payload", new JSONObject(payload.toString()));
                 } catch(JSONException ignore) {
-                    // log.warn(e.getMessage());
+                    log.warn("json형식의 데이터가 아닙니다.");
                 }
 
                 for (Wire wire : outWires) {
-                    wire.getBq().add(object);  
+                    wire.getBq().add(object);
                 }
             });
             
         } catch (Exception e) {
             log.error(e.getMessage());
-            Thread.currentThread().interrupt();
         }
-
     }
+
     @Override
-    public void process(){
+    public void process() {
     }
-
 }
