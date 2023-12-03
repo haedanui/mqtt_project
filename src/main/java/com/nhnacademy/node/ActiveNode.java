@@ -29,7 +29,8 @@ public abstract class ActiveNode extends Node implements Runnable {
         thread.interrupt();
     }
 
-    public abstract void process();
+    public void process() {
+    }
 
     public void preprocess() {
     }
