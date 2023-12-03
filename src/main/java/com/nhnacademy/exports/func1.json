@@ -1,0 +1,1 @@
+[{"func":"import java.util.Set; import com.nhnacademy.Wire; public class SayHello implements Executable { @Override public void execute(Set<Wire> inWires, Set<Wire> outWires) { System.out.println(\"hello\"); } @Override public String toString() { } } ","inWires":[],"name":"f1","outWires":[],"id":"6cdbd2bd-3672-4fcf-bd49-348f0720bd0a","type":"FunctionNode","lang":"java"}]
