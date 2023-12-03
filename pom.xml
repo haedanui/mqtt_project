@@ -64,6 +64,13 @@
             <artifactId>js</artifactId>
             <version>23.0.2</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.graalvm.polyglot/polyglot -->
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+            <version>23.1.1</version>
+        </dependency>
         
     </dependencies>
 </project>
