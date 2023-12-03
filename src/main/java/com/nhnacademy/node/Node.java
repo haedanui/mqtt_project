@@ -26,6 +26,7 @@ public abstract class Node {
     public JSONObject export() {
         JSONObject obj = new JSONObject();
 
+        obj.put("name", getName());
         obj.put("id", getId());
         obj.put("type", getType());
 

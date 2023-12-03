@@ -33,7 +33,7 @@ public class MqttOutNode extends ActiveNode implements Input {
     }
 
     public MqttOutNode(String uri) {
-        super("MqttOuNode");
+        super("", "MqttOuNode");
 
         this.uri = uri;
     }
@@ -78,11 +78,5 @@ public class MqttOutNode extends ActiveNode implements Input {
                 }
             }
         }
-    }
-
-    @Override
-    public JSONObject toJson() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toJson'");
     }
 }

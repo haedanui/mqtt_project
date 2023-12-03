@@ -29,55 +29,35 @@ public class MqttInNode extends ActiveNode implements Output {
 
     @Setter
     private String fromTopic;
+
+    public MqttInNode(String name) {
+        this(DEFAULT_URI, name);
+    }
     
-    public MqttInNode() {
-        this(DEFAULT_URI, DEFAULT_TOPIC);
+    public MqttInNode(String uri, String name) {
+        this(uri, DEFAULT_TOPIC, name);
     }
 
-    public MqttInNode(String uri) {
-        this(uri, DEFAULT_TOPIC);
-    }
-
-    public MqttInNode(String uri, String topic) {
-        super("mqtt in");
+    public MqttInNode(String uri, String topic, String name) {
+        super("MqttInNode", name);
 
         this.uri = uri;
         fromTopic = topic;
     }
 
-    /*
-     *     node-red format
-     * 
-     *     {
-     *         "id": "83ccfc177b9bbf94",
-     *         "type": "mqtt in",
-     *         "z": "c14b37e58307abb9",
-     *         "name": "",
-     *         "topic": "",
-     *         "qos": "2",
-     *         "datatype": "auto-detect",
-     *         "nl": false,
-     *         "rap": true,
-     *         "rh": 0,
-     *         "inputs": 0,
-     *         "x": 310,
-     *         "y": 220,
-     *         "wires": [
-     *             []
-     *         ]
-     *     }
-     * 
-     *     id, type, topic, wire를 가지고 있고 필요하면 더 추가해서 사용
-     */
     @Override
-    public JSONObject toJson() {
-        JSONObject obj = new JSONObject();
-
-        obj.put("id", getId());
-        obj.put("type", "mqtt in");
+    public JSONObject export() {
+        JSONObject obj = super.export();
         obj.put("topic", fromTopic);
 
-        // TODO wire 추가.
+        String[] out = new String[outWires.size()];
+        int index = 0;
+
+        for (Wire wire : outWires) {
+            out[index++] = wire.getId().toString();
+        }
+
+        obj.put("outWires", out);
 
         return obj;
     }
@@ -116,9 +96,5 @@ public class MqttInNode extends ActiveNode implements Output {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-    }
-
-    @Override
-    public void process() {
     }
 }

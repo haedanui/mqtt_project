@@ -18,7 +18,7 @@ public class DebugNode extends ActiveNode implements Input {
     private Set<Wire> inputWires = new HashSet<>();
 
     public DebugNode(String name) {
-        super(name);
+        super("", name);
     }
 
     public DebugNode() {
@@ -26,14 +26,10 @@ public class DebugNode extends ActiveNode implements Input {
     }
 
     @Override
-    public JSONObject toJson() {
-        JSONObject obj = new JSONObject();
+    public JSONObject export() {
+        // TODO 필요한 내용 추가
 
-        obj.put("id", getId());
-        obj.put("type", "debug");
-        // TODO wire 추가.
-
-        return obj;
+        return super.export();
     }
 
     /**
@@ -55,7 +51,7 @@ public class DebugNode extends ActiveNode implements Input {
                 if (wires.getMessageQue().isEmpty()) {
                     continue;
                 }
-                
+
                 Message msg = wires.getMessageQue().poll();
 
                 log.info(msg.toString());
