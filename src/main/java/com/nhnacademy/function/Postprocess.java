@@ -50,7 +50,7 @@ public class Postprocess implements Executable {
                 out.put(key, data.get(key));
             }
             else if (data.get(key) instanceof JSONObject) {
-                JSONObject temp = new JSONObject(); // TODO rename
+                JSONObject temp = new JSONObject();
                 recursive(temp, data.getJSONObject(key));
 
                 if (!temp.isEmpty()) {
