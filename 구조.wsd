@@ -1,27 +1,34 @@
-@startuml
+@startuml "mqtt project"
 
 abstract class Node {
-    UUID id;
-    long createdTime;
+    -UUID id;
+    -long createdTime;
+    -String type;
+    -String name;
+
+    +JSONObject export();
 }
 
 abstract class ActiveNode {
-    Thread thread;
-    long startTime;
+    #Thread thread;
+    #long startTime;
+    #long interval;
 
-    abstract void process();
+    +void start();
+    +void stop();
 
-    preprocess();
-    postprocess();
-
+    +void process();
+    +void preprocess();
+    +void postprocess();
+    +void run();
 }
 
 class Wire {
-    BlockingQueue<JSONObject> q;
-    UUID id;
+    -UUID id;
+    -BlockingQueue<Message> messageQue;
 
-    int hashCode();
-    boolean equals();
+    +int hashCode();
+    +boolean equals();
 }
 
 interface Output {
@@ -32,37 +39,46 @@ interface Input {
     void wireIn();
 }
 
-interface Consumer {
-}
-
 class FunctionNode {
-    Hashset<Wire> inWires;
-    Hashset<Wire> outWires;
-
-    void preprocess();
-    void postprocess();
+    -Hashset<Wire> inWires;
+    -Hashset<Wire> outWires;
+    -Executable function;
+    -String lang;
 }
 
 class MqttInNode {
-    Hashset<Wire> outWires;
+    -Hashset<Wire> outWires;
+    -String uri;
+    -String fromTopic;
 }
 
 class MqttOutNode {
-    Hashset<Wire> inWires;
+    -Hashset<Wire> inWires;
+    -String uri;
+    -IMqttClient client;
 }
 
 class DebugNode {
-    Hashset<Wire> outWires;
+    -Hashset<Wire> inWires;
 }
 
-Node <|-- MqttInNode
-Node <|-- MqttOutNode
-Node <|-- FunctionNode
-Node <|-- DebugNode
+abstract class Message {
+    -UUID id;
+}
+
+class JsonMessage {
+    -JSONObject content;
+}
+
+Node <|-- ActiveNode
+
+ActiveNode <|-- MqttInNode
+ActiveNode <|-- MqttOutNode
+ActiveNode <|-- FunctionNode
+ActiveNode <|-- DebugNode
 
 Output <|.. MqttInNode
 Input <|.. MqttOutNode
-
 Output <|.. FunctionNode
 Input <|.. FunctionNode
 Input <|.. DebugNode
@@ -72,7 +88,7 @@ Wire *-- MqttInNode
 Wire *-- MqttOutNode
 Wire *-- DebugNode
 
-FunctionNode <|-- postprocessor
-
+Message <|-- JsonMessage
+Message *-- Wire
 
 @enduml
