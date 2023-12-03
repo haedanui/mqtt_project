@@ -12,7 +12,9 @@ public abstract class ActiveNode extends Node implements Runnable {
     @Setter
     protected long interval;
 
-    protected ActiveNode(String name) {
+    protected ActiveNode(String type, String name) {
+        super(type, name);
+
         thread = new Thread(this, name);
         interval = DEFAULT_INTERVAL;
     }
