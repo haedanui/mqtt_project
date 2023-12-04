@@ -9,10 +9,13 @@ PostprocessNode에서는 Preprocess에서 받은 json데이터를 오버라이�
 Wire 클래스를 통해 MqttOutNode에 넘겨주고 MqttOutNode를 통해 원하는 사이트나 DB등에 자료를 보냅니다.
 
 
-# 현재 feat-{$브랜치로 새로운 구조로 작업중 입니다.}
+flow 구성  
+![Alt text](flow.png)
 
 클래스 구성  
-![Alt text](UML.png)  
+![!\[Alt text\](UML.png)  ](%EA%B5%AC%EC%A1%B0.png)
+
+
 
 
 설정 파일 구성  
